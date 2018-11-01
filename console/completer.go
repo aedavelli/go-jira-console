@@ -14,17 +14,21 @@ func Completer(d prompt.Document) []prompt.Suggest {
 	var s []prompt.Suggest
 	switch prefixCtx {
 	case "config":
-		s = configSuggestions()
+		s = configSuggestions(d)
 	case "admin", "":
-		s = gs
+		s = adminSuggestions(d)
 	}
 
 	return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
 }
 
-func configSuggestions() []prompt.Suggest {
+func configSuggestions(d prompt.Document) []prompt.Suggest {
 	return append(gs, prompt.Suggest{Text: "instance", Description: "JIRA instance base URL"},
 		prompt.Suggest{Text: "passwd", Description: "Password for the user"},
 		prompt.Suggest{Text: "username", Description: "Username for querying JIRA"},
 		prompt.Suggest{Text: "update", Description: "Update configuration"})
+}
+
+func adminSuggestions(d prompt.Document) []prompt.Suggest {
+	return gs
 }

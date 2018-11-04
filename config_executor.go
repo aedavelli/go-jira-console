@@ -1,14 +1,14 @@
-package console
+package main
 
 import (
+	"github.com/aedavelli/go-console"
 	"github.com/spf13/cobra"
 )
 
 var (
-	configTopCmds = make(map[string]*cobra.Command)
-	jInstance     = ""
-	jUser         = ""
-	jPswd         = ""
+	jInstance = ""
+	jUser     = ""
+	jPswd     = ""
 )
 
 func init() {
@@ -22,7 +22,7 @@ func init() {
 			return
 		},
 	}
-	configTopCmds[unCmd.Name()] = unCmd
+	console.RegisterCommandWithCtx(unCmd, "config", nil)
 
 	pswdCmd := &cobra.Command{
 		Use:   "password <string>",
@@ -34,7 +34,8 @@ func init() {
 			return
 		},
 	}
-	configTopCmds[pswdCmd.Name()] = pswdCmd
+
+	console.RegisterCommandWithCtx(pswdCmd, "config", nil)
 
 	instCmd := &cobra.Command{
 		Use:   "instance <string>",
@@ -46,7 +47,7 @@ func init() {
 			return
 		},
 	}
-	configTopCmds[instCmd.Name()] = instCmd
+	console.RegisterCommandWithCtx(instCmd, "config", nil)
 
 	updateCmd := &cobra.Command{
 		Use:   "update",
@@ -58,7 +59,7 @@ func init() {
 			return
 		},
 	}
-	configTopCmds[updateCmd.Name()] = updateCmd
+	console.RegisterCommandWithCtx(updateCmd, "config", nil)
 
 	updateJiraClient()
 }

@@ -1,16 +1,13 @@
-package console
+package main
 
 import (
 	"fmt"
 	"os"
 
+	"github.com/aedavelli/go-console"
 	"github.com/aedavelli/go-jira"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
-)
-
-var (
-	adminTopCmds = make(map[string]*cobra.Command)
 )
 
 func init() {
@@ -34,7 +31,7 @@ func init() {
 	usCmd.Flags().Int16P("limit", "l", 500, "Limit the results")
 	userCmd.AddCommand(usCmd)
 
-	adminTopCmds[userCmd.Name()] = userCmd
+	console.RegisterCommandWithCtx(userCmd, "admin", nil)
 }
 
 func userSearchCmd(cmd *cobra.Command, args []string) {

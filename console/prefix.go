@@ -2,7 +2,7 @@ package console
 
 var (
 	prefixCtx = ""
-	prefixPmt = "> "
+	prefixPmt = " "
 )
 
 func Prefix() (string, bool) {

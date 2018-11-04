@@ -3,52 +3,54 @@ package console
 import (
 	"fmt"
 	"os"
-	// "text/tabwriter"
 
 	"github.com/aedavelli/go-jira"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
 
-func handleAdminCmd(args []string) {
-	// No need to verify args length. Here means it's already validated
-	switch args[0] {
-	case "user":
-		userCmd := &cobra.Command{
-			Use:   "user [command]",
-			Short: "Perform user related operations",
-			Long:  `Perform user related operations like "add" "list" "list_groups" etc`,
-			Args:  cobra.MinimumNArgs(1),
-		}
+var (
+	adminTopCmds = make(map[string]*cobra.Command)
+)
 
-		usCmd := &cobra.Command{
-			Use:   "search <string>",
-			Short: "Perform user search operation",
-			Long:  `Perform user search operation based on given string`,
-			Args:  cobra.ExactArgs(1),
-			Run:   userSearchCmd,
-		}
-		var ulAll bool
-
-		usCmd.Flags().BoolVar(&ulAll, "list-all", false, "List all users override search string")
-
-		userCmd.AddCommand(usCmd)
-		userCmd.SetArgs(args[1:])
-		userCmd.Execute()
-
+func init() {
+	userCmd := &cobra.Command{
+		Use:   "user [command]",
+		Short: "Perform user related operations",
+		Long:  `Perform user related operations like "add" "list" "list_groups" etc`,
+		Args:  cobra.MinimumNArgs(1),
 	}
+
+	usCmd := &cobra.Command{
+		Use:   "search <string>",
+		Short: "Perform user search operation",
+		Long:  `Perform user search operation based on given string`,
+		Args:  cobra.ExactArgs(1),
+		Run:   userSearchCmd,
+	}
+
+	usCmd.Flags().Bool("list-all", false, "List all users override search string")
+	usCmd.Flags().Bool("list-inactive", false, "List inactive users")
+	usCmd.Flags().Int16P("limit", "l", 500, "Limit the results")
+	userCmd.AddCommand(usCmd)
+
+	adminTopCmds[userCmd.Name()] = userCmd
 }
 
 func userSearchCmd(cmd *cobra.Command, args []string) {
-	flAll := cmd.Flag("list-all")
 	q := args[0]
+	l, _ := cmd.Flags().GetInt16("limit")
+	i, _ := cmd.Flags().GetBool("list-inactive")
 
-	if flAll.Changed {
+	if cmd.Flags().Changed("list-all") {
 		q = `%%`
+		// Override remaining flags
+		i = true
+		l = 500
 	}
 
 	ul, _, err := jClient.User.Find(jira.WithQuery(q),
-		jira.WithMaxResults(500), jira.WithInactive(true))
+		jira.WithMaxResults(int(l)), jira.WithInactive(i))
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -6,6 +6,8 @@ import (
 	"github.com/aedavelli/go-console"
 	"github.com/c-bata/go-prompt"
 	"github.com/c-bata/go-prompt/completer"
+
+	_ "github.com/aedavelli/go-jira-console/jiraconsole"
 )
 
 var (
